@@ -304,7 +304,7 @@ blocks:
     label: RF Frequency 1
     short_id: ''
     type: eng_float
-    value: 1420.4058e6
+    value: 1413.5e6
   states:
     bus_sink: false
     bus_source: false
@@ -565,7 +565,7 @@ blocks:
     label: Sample rate
     short_id: ''
     type: eng_float
-    value: 25e6
+    value: 27e6
   states:
     bus_sink: false
     bus_source: false
