@@ -391,7 +391,8 @@ blocks:
       \            self.current = self.frequency\n            return (len(input_items[0]))\n\
       \n        curf = int(self.frequency/1.0e6)\n        \n        #\n        # Is\
       \ a new frequency?  Initialize averaging buffers\n        #\n        if (curf\
-      \ not in self.myffts):\n            self.myffts[curf] = [np.zeros(self.fftsize,dtype=np.float32),\n\
+      \ not in self.myffts):\n            print (\"Adding record for %d\" % curf)\n\
+      \            self.myffts[curf] = [np.zeros(self.fftsize,dtype=np.float32),\n\
       \                np.zeros(self.fftsize,dtype=np.float32)]\n            self.mycounts[curf]\
       \ = [0,0]\n        \n        \n        for v in input_items[0]:\n          \
       \  self.myffts[curf][0] = np.add(v,self.myffts[curf][0])\n            self.mycounts[curf][0]\
