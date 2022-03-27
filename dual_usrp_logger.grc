@@ -384,31 +384,31 @@ blocks:
       \ = time.time()\n        self.fftcnt_a = 0\n        self.fftcnt_b = 0\n    \
       \    self.longitude = longitude\n        self.logtime = logtime\n        self.frequency\
       \ = frequency\n        self.myffts = {}\n        self.mycounts = {}\n      \
-      \  self.current = self.frequency\n\n\n    # Given longitude(decimal degrees\
-      \ as a float)\n    #\n    # Return the current sidereal time as a string with\n\
-      \    #  \",\" separated tokens\n    #\n    def cur_sidereal(self,longitude):\n\
-      \        longstr = \"%02d\" % int(longitude)\n        longstr = longstr + \"\
-      :\"\n        longitude = abs(longitude)\n        frac = longitude - int(longitude)\n\
-      \        frac *= 60\n        mins = int(frac)\n        longstr += \"%02d\" %\
-      \ mins\n        longstr += \":00\"\n        x = ephem.Observer()\n        x.date\
-      \ = ephem.now()\n        x.long = longstr\n        jdate = ephem.julian_date(x)\n\
-      \        tokens=str(x.sidereal_time()).split(\":\")\n        hours=int(tokens[0])\n\
-      \        minutes=int(tokens[1])\n        seconds=int(float(tokens[2]))\n   \
-      \     sidt = \"%02d,%02d,%02d\" % (hours, minutes, seconds)\n        return\
-      \ (sidt)\n        \n    def do_the_log(self, fn, tp, val, cf):\n        fp =\
-      \ open(fn, \"a\")\n        fp.write(\"%02d,%02d,%02d,\" % (tp.tm_hour, tp.tm_min,\
-      \ tp.tm_sec))\n        lmst = self.cur_sidereal(self.longitude)\n        fp.write(\"\
-      %s,\" % lmst)\n        fp.write(\"%d,\" % cf)\n        for i in range(len(val)):\n\
-      \            fp.write(\"%11.9f\" % val[i])\n            if (i < (len(val)-1)):\n\
-      \                fp.write(\",\")\n        fp.write(\"\\n\")\n\n    def work(self,\
-      \ input_items, output_items):\n        \"\"\"Accumulate and log FFT buffers\"\
-      \"\"\n        \n        #\n        # If we've just switched frequency, discard\
-      \ input for one\n        #  cycle\n        #\n        if (self.current != self.frequency):\n\
-      \            self.current = self.frequency\n            return (len(input_items[0]))\n\
+      \  self.current = self.frequency\n        self.set_output_multiple(2)\n\n\n\
+      \    # Given longitude(decimal degrees as a float)\n    #\n    # Return the\
+      \ current sidereal time as a string with\n    #  \",\" separated tokens\n  \
+      \  #\n    def cur_sidereal(self,longitude):\n        longstr = \"%02d\" % int(longitude)\n\
+      \        longstr = longstr + \":\"\n        longitude = abs(longitude)\n   \
+      \     frac = longitude - int(longitude)\n        frac *= 60\n        mins =\
+      \ int(frac)\n        longstr += \"%02d\" % mins\n        longstr += \":00\"\n\
+      \        x = ephem.Observer()\n        x.date = ephem.now()\n        x.long\
+      \ = longstr\n        jdate = ephem.julian_date(x)\n        tokens=str(x.sidereal_time()).split(\"\
+      :\")\n        hours=int(tokens[0])\n        minutes=int(tokens[1])\n       \
+      \ seconds=int(float(tokens[2]))\n        sidt = \"%02d,%02d,%02d\" % (hours,\
+      \ minutes, seconds)\n        return (sidt)\n        \n    def do_the_log(self,\
+      \ fn, tp, val, cf):\n        fp = open(fn, \"a\")\n        fp.write(\"%02d,%02d,%02d,\"\
+      \ % (tp.tm_hour, tp.tm_min, tp.tm_sec))\n        lmst = self.cur_sidereal(self.longitude)\n\
+      \        fp.write(\"%s,\" % lmst)\n        fp.write(\"%d,\" % cf)\n        for\
+      \ i in range(len(val)):\n            fp.write(\"%11.9f\" % val[i])\n       \
+      \     if (i < (len(val)-1)):\n                fp.write(\",\")\n        fp.write(\"\
+      \\n\")\n        fp.close()\n\n    def work(self, input_items, output_items):\n\
+      \        \"\"\"Accumulate and log FFT buffers\"\"\"\n        \n        #\n \
+      \       # If we've just switched frequency, discard input for one\n        #\
+      \  cycle\n        #\n        if (self.current != self.frequency):\n        \
+      \    self.current = self.frequency\n            return (len(input_items[0]))\n\
       \n        curf = int(self.frequency/1.0e6)\n        \n        #\n        # Is\
       \ a new frequency?  Initialize averaging buffers\n        #\n        if (curf\
-      \ not in self.myffts):\n            print (\"Adding record for %d\" % curf)\n\
-      \            self.myffts[curf] = [np.zeros(self.fftsize,dtype=np.float32),\n\
+      \ not in self.myffts):\n            self.myffts[curf] = [np.zeros(self.fftsize,dtype=np.float32),\n\
       \                np.zeros(self.fftsize,dtype=np.float32)]\n            self.mycounts[curf]\
       \ = [0,0]\n        \n        \n        for v in input_items[0]:\n          \
       \  self.myffts[curf][0] = np.add(v,self.myffts[curf][0])\n            self.mycounts[curf][0]\
