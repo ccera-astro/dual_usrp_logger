@@ -386,25 +386,27 @@ blocks:
       \            fp.write(\"%11.9f\" % val[i])\n            if (i < (len(val)-1)):\n\
       \                fp.write(\",\")\n        fp.write(\"\\n\")\n\n    def work(self,\
       \ input_items, output_items):\n        \"\"\"Accumulate and log FFT buffers\"\
-      \"\"\n        \n        #\n        # If we've just switched frequency, discard\
-      \ input for one\n        #  cycle\n        #\n        if (self.current != self.frequency):\n\
-      \            self.current = self.frequency\n            return (len(input_items[0]))\n\
-      \n        curf = int(self.frequency/1.0e6)\n        \n        #\n        # Is\
-      \ a new frequency?  Initialize averaging buffers\n        #\n        if (curf\
-      \ not in self.myffts):\n            print (\"Adding record for %d\" % curf)\n\
-      \            self.myffts[curf] = [np.zeros(self.fftsize,dtype=np.float32),\n\
-      \                np.zeros(self.fftsize,dtype=np.float32)]\n            self.mycounts[curf]\
-      \ = [0,0]\n        \n        \n        for v in input_items[0]:\n          \
-      \  self.myffts[curf][0] = np.add(v,self.myffts[curf][0])\n            self.mycounts[curf][0]\
-      \ += 1\n            \n        for v in input_items[1]:\n            self.myffts[curf][1]\
-      \ = np.add(v,self.myffts[curf][0])\n            self.mycounts[curf][1] += 1\n\
-      \        \n        #\n        # This needs a complete re-do for multi-freq\n\
-      \        #\n        if ((time.time() - self.last) > self.logtime):\n       \
-      \     for ndx in self.myffts:\n                lva = np.divide(self.myffts[ndx][0],self.mycounts[ndx][0])\n\
-      \                lvb = np.divide(self.myffts[ndx][1],self.mycounts[ndx][1])\n\
-      \                \n                #\n                # Counters\n         \
-      \       #\n                self.mycounts[ndx][0] = 0\n                self.mycounts[ndx][1]\
-      \ = 0\n                \n                #\n                # Averaging buffers\n\
+      \"\"\n        \n        if (int(time.time()) % 3 == 0):\n            print (\"\
+      self.frequency %f\" % self.frequency)\n        \n        #\n        # If we've\
+      \ just switched frequency, discard input for one\n        #  cycle\n       \
+      \ #\n        if (self.current != self.frequency):\n            self.current\
+      \ = self.frequency\n            return (len(input_items[0]))\n\n        curf\
+      \ = int(self.frequency/1.0e6)\n        \n        #\n        # Is a new frequency?\
+      \  Initialize averaging buffers\n        #\n        if (curf not in self.myffts):\n\
+      \            print (\"Adding record for %d\" % curf)\n            self.myffts[curf]\
+      \ = [np.zeros(self.fftsize,dtype=np.float32),\n                np.zeros(self.fftsize,dtype=np.float32)]\n\
+      \            self.mycounts[curf] = [0,0]\n        \n        \n        for v\
+      \ in input_items[0]:\n            self.myffts[curf][0] = np.add(v,self.myffts[curf][0])\n\
+      \            self.mycounts[curf][0] += 1\n            \n        for v in input_items[1]:\n\
+      \            self.myffts[curf][1] = np.add(v,self.myffts[curf][0])\n       \
+      \     self.mycounts[curf][1] += 1\n        \n        #\n        # This needs\
+      \ a complete re-do for multi-freq\n        #\n        if ((time.time() - self.last)\
+      \ > self.logtime):\n            for ndx in self.myffts:\n                lva\
+      \ = np.divide(self.myffts[ndx][0],self.mycounts[ndx][0])\n                lvb\
+      \ = np.divide(self.myffts[ndx][1],self.mycounts[ndx][1])\n                \n\
+      \                #\n                # Counters\n                #\n        \
+      \        self.mycounts[ndx][0] = 0\n                self.mycounts[ndx][1] =\
+      \ 0\n                \n                #\n                # Averaging buffers\n\
       \                #\n                self.myffts[ndx][0] = np.zeros(self.fftsize,dtype=np.float32)\n\
       \                self.myffts[ndx][1] = np.zeros(self.fftsize,dtype=np.float32)\n\
       \                \n                \n                #\n                # Form\
