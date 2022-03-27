@@ -36,7 +36,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: flist[int(time.time()) % 2]+(0.0*pacer.real)
+    value: flist[int(time.time()) % 2]+(0.0*pacer)
   states:
     bus_sink: false
     bus_source: false
@@ -126,6 +126,22 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1056, 396.0]
+    rotation: 0
+    state: true
+- name: blocks_complex_to_real_0
+  id: blocks_complex_to_real
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [240, 516.0]
     rotation: 0
     state: true
 - name: blocks_head_0
@@ -481,7 +497,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    type: complex
+    type: float
   states:
     bus_sink: false
     bus_source: false
@@ -952,6 +968,7 @@ blocks:
 connections:
 - [blocks_complex_to_mag_squared_0, '0', single_pole_iir_filter_xx_0, '0']
 - [blocks_complex_to_mag_squared_0_0, '0', single_pole_iir_filter_xx_0_0, '0']
+- [blocks_complex_to_real_0, '0', pacer_probe, '0']
 - [blocks_head_0, '0', blocks_stream_to_vector_0, '0']
 - [blocks_head_0_0, '0', blocks_stream_to_vector_0_0, '0']
 - [blocks_keep_one_in_n_0, '0', logger_0, '0']
@@ -963,8 +980,8 @@ connections:
 - [single_pole_iir_filter_xx_0, '0', blocks_keep_one_in_n_0, '0']
 - [single_pole_iir_filter_xx_0_0, '0', blocks_keep_one_in_n_0_0, '0']
 - [uhd_usrp_source_0, '0', blocks_head_0, '0']
+- [uhd_usrp_source_0, '1', blocks_complex_to_real_0, '0']
 - [uhd_usrp_source_0, '1', blocks_head_0_0, '0']
-- [uhd_usrp_source_0, '1', pacer_probe, '0']
 
 metadata:
   file_format: 1
