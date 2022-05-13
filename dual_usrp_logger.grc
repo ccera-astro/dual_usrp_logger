@@ -96,6 +96,18 @@ blocks:
     coordinate: [208, 12.0]
     rotation: 0
     state: enabled
+- name: tr
+  id: variable
+  parameters:
+    comment: ''
+    value: uhd.tune_request(dyn_freq,samp_rate/2.0)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [472, 36.0]
+    rotation: 0
+    state: true
 - name: blocks_complex_to_mag_squared_0
   id: blocks_complex_to_mag_squared
   parameters:
@@ -630,8 +642,8 @@ blocks:
     ant7: RX2
     ant8: RX2
     ant9: RX2
-    bw0: samp_rate*0.8
-    bw1: samp_rate*0.8
+    bw0: samp_rate+samp_rate/2.0
+    bw1: samp_rate+samp_rate/2.0
     bw10: '0'
     bw11: '0'
     bw12: '0'
@@ -662,8 +674,8 @@ blocks:
     bw7: '0'
     bw8: '0'
     bw9: '0'
-    center_freq0: dyn_freq
-    center_freq1: dyn_freq
+    center_freq0: tr
+    center_freq1: tr
     center_freq10: '0'
     center_freq11: '0'
     center_freq12: '0'
@@ -962,7 +974,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [64, 180.0]
+    coordinate: [24, 148.0]
     rotation: 0
     state: true
 
