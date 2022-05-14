@@ -328,7 +328,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     nthreads: '1'
-    shift: 'True'
+    shift: 'False'
     type: complex
     window: window.blackmanharris(fftsize)
   states:
@@ -349,7 +349,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     nthreads: '1'
-    shift: 'True'
+    shift: 'False'
     type: complex
     window: window.blackmanharris(fftsize)
   states:
