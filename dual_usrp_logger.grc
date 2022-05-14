@@ -105,9 +105,21 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [472, 36.0]
+    coordinate: [408, 12.0]
     rotation: 0
     state: true
+- name: winpower
+  id: variable
+  parameters:
+    comment: ''
+    value: sum([x*x for x in window.blackman_harris(fftsize)])
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1032, 324.0]
+    rotation: 0
+    state: enabled
 - name: blocks_complex_to_mag_squared_0
   id: blocks_complex_to_mag_squared
   parameters:
@@ -228,40 +240,40 @@ blocks:
     coordinate: [1512, 396.0]
     rotation: 0
     state: true
-- name: blocks_multiply_const_xx_0
-  id: blocks_multiply_const_xx
+- name: blocks_nlog10_ff_0
+  id: blocks_nlog10_ff
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    const: 1.0/fftsize
+    k: -20*math.log10(fftsize)-10*math.log10(winpower/fftsize)
     maxoutbuf: '0'
     minoutbuf: '0'
-    type: float
+    n: '1'
     vlen: fftsize
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1728, 284.0]
+    coordinate: [1736, 292.0]
     rotation: 0
     state: true
-- name: blocks_multiply_const_xx_0_0
-  id: blocks_multiply_const_xx
+- name: blocks_nlog10_ff_0_0
+  id: blocks_nlog10_ff
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    const: 1.0/fftsize
+    k: -20*math.log10(fftsize)-10*math.log10(winpower/fftsize)
     maxoutbuf: '0'
     minoutbuf: '0'
-    type: float
+    n: '1'
     vlen: fftsize
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1720, 468.0]
+    coordinate: [1736, 404.0]
     rotation: 0
     state: true
 - name: blocks_stream_to_vector_0
@@ -410,6 +422,19 @@ blocks:
     coordinate: [1736, 68.0]
     rotation: 0
     state: true
+- name: import_0
+  id: import
+  parameters:
+    alias: ''
+    comment: ''
+    imports: import math
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [496, 76.0]
+    rotation: 0
+    state: true
 - name: logger_0
   id: epy_block
   parameters:
@@ -445,18 +470,18 @@ blocks:
       \ fn, tp, val, cf):\n        fp = open(fn, \"a\")\n        fp.write(\"%02d,%02d,%02d,\"\
       \ % (tp.tm_hour, tp.tm_min, tp.tm_sec))\n        lmst = self.cur_sidereal(self.longitude)\n\
       \        fp.write(\"%s,\" % lmst)\n        fp.write(\"%d,\" % cf)\n        for\
-      \ i in range(len(val)):\n            fp.write(\"%7.3f\" % (math.log10(val[i])*10.0))\n\
-      \            if (i < (len(val)-1)):\n                fp.write(\",\")\n     \
-      \   fp.write(\"\\n\")\n        fp.close()\n\n    def work(self, input_items,\
-      \ output_items):\n        \"\"\"Accumulate and log FFT buffers\"\"\"\n     \
-      \   \n        #\n        # Used to skip first buffer after frequency-switch\n\
-      \        #\n        skip = False\n        \n        #\n        # If we've just\
-      \ switched frequency, discard input for one\n        #  cycle\n        #\n \
-      \       if (self.current != self.frequency):\n            self.current = self.frequency\n\
-      \            skip = True\n\n        curf = int(self.frequency/1.0e6)\n     \
-      \   \n        #\n        # Is a new frequency?  Initialize averaging buffers\n\
-      \        #\n        if (curf not in self.myffts):\n            self.myffts[curf]\
-      \ = [np.zeros(self.fftsize,dtype=np.float32),\n                np.zeros(self.fftsize,dtype=np.float32)]\n\
+      \ i in range(len(val)):\n            fp.write(\"%7.3f\" % val[i])\n        \
+      \    if (i < (len(val)-1)):\n                fp.write(\",\")\n        fp.write(\"\
+      \\n\")\n        fp.close()\n\n    def work(self, input_items, output_items):\n\
+      \        \"\"\"Accumulate and log FFT buffers\"\"\"\n        \n        #\n \
+      \       # Used to skip first buffer after frequency-switch\n        #\n    \
+      \    skip = False\n        \n        #\n        # If we've just switched frequency,\
+      \ discard input for one\n        #  cycle\n        #\n        if (self.current\
+      \ != self.frequency):\n            self.current = self.frequency\n         \
+      \   skip = True\n\n        curf = int(self.frequency/1.0e6)\n        \n    \
+      \    #\n        # Is a new frequency?  Initialize averaging buffers\n      \
+      \  #\n        if (curf not in self.myffts):\n            self.myffts[curf] =\
+      \ [np.zeros(self.fftsize,dtype=np.float32),\n                np.zeros(self.fftsize,dtype=np.float32)]\n\
       \            self.mycounts[curf] = [0,0]\n        \n        if (skip == True):\n\
       \            s = 1\n        else:\n            s = 0\n            \n       \
       \ for v in input_items[0]:\n            if (s <= 0):\n                self.myffts[curf][0]\
@@ -1020,10 +1045,10 @@ connections:
 - [blocks_complex_to_real_0, '0', pacer_probe, '0']
 - [blocks_head_0, '0', blocks_stream_to_vector_0, '0']
 - [blocks_head_0_0, '0', blocks_stream_to_vector_0_0, '0']
-- [blocks_keep_one_in_n_0, '0', blocks_multiply_const_xx_0, '0']
-- [blocks_keep_one_in_n_0_0, '0', blocks_multiply_const_xx_0_0, '0']
-- [blocks_multiply_const_xx_0, '0', logger_0, '0']
-- [blocks_multiply_const_xx_0_0, '0', logger_0, '1']
+- [blocks_keep_one_in_n_0, '0', blocks_nlog10_ff_0, '0']
+- [blocks_keep_one_in_n_0_0, '0', blocks_nlog10_ff_0_0, '0']
+- [blocks_nlog10_ff_0, '0', logger_0, '0']
+- [blocks_nlog10_ff_0_0, '0', logger_0, '1']
 - [blocks_stream_to_vector_0, '0', fft_vxx_0, '0']
 - [blocks_stream_to_vector_0_0, '0', fft_vxx_0_0, '0']
 - [fft_vxx_0, '0', blocks_complex_to_mag_squared_0, '0']
