@@ -249,7 +249,7 @@ blocks:
     k: -20*math.log10(fftsize)-10*math.log10(winpower/fftsize)
     maxoutbuf: '0'
     minoutbuf: '0'
-    n: '1'
+    n: '10'
     vlen: fftsize
   states:
     bus_sink: false
@@ -267,7 +267,7 @@ blocks:
     k: -20*math.log10(fftsize)-10*math.log10(winpower/fftsize)
     maxoutbuf: '0'
     minoutbuf: '0'
-    n: '1'
+    n: '10'
     vlen: fftsize
   states:
     bus_sink: false
