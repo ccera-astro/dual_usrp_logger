@@ -460,7 +460,7 @@ blocks:
       \        #\n        if (curf not in self.myffts):\n            self.myffts[curf]\
       \ = [np.zeros(self.fftsize,dtype=np.float32),\n                np.zeros(self.fftsize,dtype=np.float32)]\n\
       \            self.mycounts[curf] = [0,0]\n        \n        if (skip == True):\n\
-      \            s = 1\n        else:\n            s - 0\n        for v in input_items[0]:\n\
+      \            s = 1\n        else:\n            s = 0\n        for v in input_items[0]:\n\
       \            if (s <= 0):\n                self.myffts[curf][0] = np.add(v,self.myffts[curf][0])\n\
       \                self.mycounts[curf][0] += 1\n            else:\n          \
       \      s -= 1\n         \n        if (skip == True):\n            s = 1\n  \
