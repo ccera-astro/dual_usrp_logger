@@ -427,13 +427,11 @@ blocks:
       \          in_sig=[(np.float32,fftsize)]*2,\n            out_sig=None\n\n  \
       \      )\n        # if an attribute with the same name as a parameter is found,\n\
       \        # a callback is registered (properties work, too).\n        self.fftsize\
-      \ = fftsize\n        self.prefix=prefix\n        #self.fft_a = np.zeros(self.fftsize,dtype=np.float32)\n\
-      \        #self.fft_b = np.zeros(self.fftsize,dtype=np.float32)\n        self.last\
-      \ = time.time()\n        self.fftcnt_a = 0\n        self.fftcnt_b = 0\n    \
-      \    self.longitude = longitude\n        self.logtime = logtime\n        self.frequency\
-      \ = frequency\n        self.myffts = {}\n        self.mycounts = {}\n      \
-      \  self.current = self.frequency\n        self.set_output_multiple(2)\n\n\n\
-      \    # Given longitude(decimal degrees as a float)\n    #\n    # Return the\
+      \ = fftsize\n        self.prefix=prefix\n        self.last = time.time()\n \
+      \       self.longitude = longitude\n        self.logtime = logtime\n       \
+      \ self.frequency = frequency\n        self.myffts = {}\n        self.mycounts\
+      \ = {}\n        self.current = self.frequency\n        self.set_output_multiple(2)\n\
+      \n\n    # Given longitude(decimal degrees as a float)\n    #\n    # Return the\
       \ current sidereal time as a string with\n    #  \",\" separated tokens\n  \
       \  #\n    def cur_sidereal(self,longitude):\n        longstr = \"%02d\" % int(longitude)\n\
       \        longstr = longstr + \":\"\n        longitude = abs(longitude)\n   \
@@ -460,19 +458,19 @@ blocks:
       \        #\n        if (curf not in self.myffts):\n            self.myffts[curf]\
       \ = [np.zeros(self.fftsize,dtype=np.float32),\n                np.zeros(self.fftsize,dtype=np.float32)]\n\
       \            self.mycounts[curf] = [0,0]\n        \n        if (skip == True):\n\
-      \            s = 1\n        else:\n            s = 0\n        for v in input_items[0]:\n\
-      \            if (s <= 0):\n                self.myffts[curf][0] = np.add(v,self.myffts[curf][0])\n\
-      \                self.mycounts[curf][0] += 1\n            else:\n          \
-      \      s -= 1\n         \n        if (skip == True):\n            s = 1\n  \
-      \      else:\n            s = 0\n         \n        for v in input_items[1]:\n\
-      \            if (s <= 0):\n                self.myffts[curf][1] = np.add(v,self.myffts[curf][1])\n\
-      \                self.mycounts[curf][1] += 1\n            else:\n          \
-      \      s -= 1\n        \n        #\n        #\n        #\n        if ((time.time()\
-      \ - self.last) > self.logtime):\n            for ndx in self.myffts:\n     \
-      \           lva = np.divide(self.myffts[ndx][0],self.mycounts[ndx][0])\n   \
-      \             lvb = np.divide(self.myffts[ndx][1],self.mycounts[ndx][1])\n \
-      \               \n                #\n                # Counters\n          \
-      \      #\n                self.mycounts[ndx][0] = 0\n                self.mycounts[ndx][1]\
+      \            s = 1\n        else:\n            s = 0\n            \n       \
+      \ for v in input_items[0]:\n            if (s <= 0):\n                self.myffts[curf][0]\
+      \ = np.add(v,self.myffts[curf][0])\n                self.mycounts[curf][0] +=\
+      \ 1\n            else:\n                s -= 1\n         \n        if (skip\
+      \ == True):\n            s = 1\n        else:\n            s = 0\n         \n\
+      \        for v in input_items[1]:\n            if (s <= 0):\n              \
+      \  self.myffts[curf][1] = np.add(v,self.myffts[curf][1])\n                self.mycounts[curf][1]\
+      \ += 1\n            else:\n                s -= 1\n        \n        #\n   \
+      \     #\n        #\n        if ((time.time() - self.last) > self.logtime):\n\
+      \            for ndx in self.myffts:\n                lva = np.divide(self.myffts[ndx][0],self.mycounts[ndx][0])\n\
+      \                lvb = np.divide(self.myffts[ndx][1],self.mycounts[ndx][1])\n\
+      \                \n                #\n                # Counters\n         \
+      \       #\n                self.mycounts[ndx][0] = 0\n                self.mycounts[ndx][1]\
       \ = 0\n                \n                #\n                # Averaging buffers\n\
       \                #\n                self.myffts[ndx][0] = np.zeros(self.fftsize,dtype=np.float32)\n\
       \                self.myffts[ndx][1] = np.zeros(self.fftsize,dtype=np.float32)\n\
@@ -680,8 +678,8 @@ blocks:
     ant7: RX2
     ant8: RX2
     ant9: RX2
-    bw0: samp_rate*2
-    bw1: samp_rate*2
+    bw0: samp_rate*0.8
+    bw1: samp_rate*0.8
     bw10: '0'
     bw11: '0'
     bw12: '0'
@@ -712,8 +710,8 @@ blocks:
     bw7: '0'
     bw8: '0'
     bw9: '0'
-    center_freq0: tr
-    center_freq1: tr
+    center_freq0: dyn_freq
+    center_freq1: dyn_freq
     center_freq10: '0'
     center_freq11: '0'
     center_freq12: '0'
