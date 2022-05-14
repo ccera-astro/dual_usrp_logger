@@ -417,7 +417,7 @@ blocks:
       \ GRC will instantiate the first class it finds\nto get ports and parameters\
       \ of your block. The arguments to __init__  will\nbe the parameters. All of\
       \ them are required to have default values!\n\"\"\"\n\nimport numpy as np\n\
-      from gnuradio import gr\nimport time\nimport ephem\n\n\nclass blk(gr.sync_block):\
+      from gnuradio import gr\nimport time\nimport ephem\nimport math\n\n\nclass blk(gr.sync_block):\
       \  # other base classes are basic_block, decim_block, interp_block\n    \"\"\
       \"Embedded Python Block example - a simple multiply const\"\"\"\n\n    def __init__(self,\
       \ fftsize=2048,prefix=\"./\",longitude=-76.03,logtime=10, frequency=1420.4058e6):\
@@ -447,30 +447,31 @@ blocks:
       \ fn, tp, val, cf):\n        fp = open(fn, \"a\")\n        fp.write(\"%02d,%02d,%02d,\"\
       \ % (tp.tm_hour, tp.tm_min, tp.tm_sec))\n        lmst = self.cur_sidereal(self.longitude)\n\
       \        fp.write(\"%s,\" % lmst)\n        fp.write(\"%d,\" % cf)\n        for\
-      \ i in range(len(val)):\n            fp.write(\"%11.9f\" % val[i])\n       \
-      \     if (i < (len(val)-1)):\n                fp.write(\",\")\n        fp.write(\"\
-      \\n\")\n        fp.close()\n\n    def work(self, input_items, output_items):\n\
-      \        \"\"\"Accumulate and log FFT buffers\"\"\"\n        \n        #\n \
-      \       # Used to skip first buffer after frequency-switch\n        #\n    \
-      \    skip = 0\n        \n        #\n        # If we've just switched frequency,\
-      \ discard input for one\n        #  cycle\n        #\n        if (self.current\
-      \ != self.frequency):\n            self.current = self.frequency\n         \
-      \   skip = 1\n\n        curf = int(self.frequency/1.0e6)\n        \n       \
-      \ #\n        # Is a new frequency?  Initialize averaging buffers\n        #\n\
-      \        if (curf not in self.myffts):\n            self.myffts[curf] = [np.zeros(self.fftsize,dtype=np.float32),\n\
-      \                np.zeros(self.fftsize,dtype=np.float32)]\n            self.mycounts[curf]\
-      \ = [0,0]\n        \n        \n        for v in input_items[0]:\n          \
-      \  if (skip <= 0):\n                self.myffts[curf][0] = np.add(v,self.myffts[curf][0])\n\
-      \                self.mycounts[curf][0] += 1\n            else:\n          \
-      \      skip -= 1\n            \n        for v in input_items[1]:\n         \
-      \   if (skip <= 0):\n                self.myffts[curf][1] = np.add(v,self.myffts[curf][1])\n\
-      \                self.mycounts[curf][1] += 1\n            else:\n          \
-      \      skip -= 1\n        \n        #\n        # This needs a complete re-do\
-      \ for multi-freq\n        #\n        if ((time.time() - self.last) > self.logtime):\n\
-      \            for ndx in self.myffts:\n                lva = np.divide(self.myffts[ndx][0],self.mycounts[ndx][0])\n\
-      \                lvb = np.divide(self.myffts[ndx][1],self.mycounts[ndx][1])\n\
-      \                \n                #\n                # Counters\n         \
-      \       #\n                self.mycounts[ndx][0] = 0\n                self.mycounts[ndx][1]\
+      \ i in range(len(val)):\n            fp.write(\"%7.3f\" % (math.log10(val[i])*10.0))\n\
+      \            if (i < (len(val)-1)):\n                fp.write(\",\")\n     \
+      \   fp.write(\"\\n\")\n        fp.close()\n\n    def work(self, input_items,\
+      \ output_items):\n        \"\"\"Accumulate and log FFT buffers\"\"\"\n     \
+      \   \n        #\n        # Used to skip first buffer after frequency-switch\n\
+      \        #\n        skip = 0\n        \n        #\n        # If we've just switched\
+      \ frequency, discard input for one\n        #  cycle\n        #\n        if\
+      \ (self.current != self.frequency):\n            self.current = self.frequency\n\
+      \            skip = 1\n\n        curf = int(self.frequency/1.0e6)\n        \n\
+      \        #\n        # Is a new frequency?  Initialize averaging buffers\n  \
+      \      #\n        if (curf not in self.myffts):\n            self.myffts[curf]\
+      \ = [np.zeros(self.fftsize,dtype=np.float32),\n                np.zeros(self.fftsize,dtype=np.float32)]\n\
+      \            self.mycounts[curf] = [0,0]\n        \n        \n        for v\
+      \ in input_items[0]:\n            if (skip <= 0):\n                self.myffts[curf][0]\
+      \ = np.add(v,self.myffts[curf][0])\n                self.mycounts[curf][0] +=\
+      \ 1\n            else:\n                skip -= 1\n            \n        for\
+      \ v in input_items[1]:\n            if (skip <= 0):\n                self.myffts[curf][1]\
+      \ = np.add(v,self.myffts[curf][1])\n                self.mycounts[curf][1] +=\
+      \ 1\n            else:\n                skip -= 1\n        \n        #\n   \
+      \     # This needs a complete re-do for multi-freq\n        #\n        if ((time.time()\
+      \ - self.last) > self.logtime):\n            for ndx in self.myffts:\n     \
+      \           lva = np.divide(self.myffts[ndx][0],self.mycounts[ndx][0])\n   \
+      \             lvb = np.divide(self.myffts[ndx][1],self.mycounts[ndx][1])\n \
+      \               \n                #\n                # Counters\n          \
+      \      #\n                self.mycounts[ndx][0] = 0\n                self.mycounts[ndx][1]\
       \ = 0\n                \n                #\n                # Averaging buffers\n\
       \                #\n                self.myffts[ndx][0] = np.zeros(self.fftsize,dtype=np.float32)\n\
       \                self.myffts[ndx][1] = np.zeros(self.fftsize,dtype=np.float32)\n\
@@ -503,7 +504,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1920, 332.0]
+    coordinate: [1960, 332.0]
     rotation: 0
     state: true
 - name: logtime
