@@ -328,7 +328,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     nthreads: '1'
-    shift: 'False'
+    shift: 'True'
     type: complex
     window: window.blackmanharris(fftsize)
   states:
@@ -349,7 +349,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     nthreads: '1'
-    shift: 'False'
+    shift: 'True'
     type: complex
     window: window.blackmanharris(fftsize)
   states:
@@ -679,8 +679,8 @@ blocks:
     ant7: RX2
     ant8: RX2
     ant9: RX2
-    bw0: samp_rate+samp_rate/2.0
-    bw1: samp_rate+samp_rate/2.0
+    bw0: samp_rate*2
+    bw1: samp_rate*2
     bw10: '0'
     bw11: '0'
     bw12: '0'
