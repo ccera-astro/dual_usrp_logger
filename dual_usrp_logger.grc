@@ -228,6 +228,42 @@ blocks:
     coordinate: [1512, 396.0]
     rotation: 0
     state: true
+- name: blocks_multiply_const_xx_0
+  id: blocks_multiply_const_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: 1.0/fftsize
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: fftsize
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1728, 284.0]
+    rotation: 0
+    state: true
+- name: blocks_multiply_const_xx_0_0
+  id: blocks_multiply_const_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: 1.0/fftsize
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: fftsize
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1720, 468.0]
+    rotation: 0
+    state: true
 - name: blocks_stream_to_vector_0
   id: blocks_stream_to_vector
   parameters:
@@ -418,23 +454,23 @@ blocks:
       \       # Used to skip first buffer after frequency-switch\n        #\n    \
       \    skip = 0\n        \n        #\n        # If we've just switched frequency,\
       \ discard input for one\n        #  cycle\n        #\n        if (self.current\
-      \ != self.frequency):\n            skip = 1\n\n        curf = int(self.frequency/1.0e6)\n\
-      \        \n        #\n        # Is a new frequency?  Initialize averaging buffers\n\
-      \        #\n        if (curf not in self.myffts):\n            self.myffts[curf]\
-      \ = [np.zeros(self.fftsize,dtype=np.float32),\n                np.zeros(self.fftsize,dtype=np.float32)]\n\
-      \            self.mycounts[curf] = [0,0]\n        \n        \n        for v\
-      \ in input_items[0]:\n            if (skip <= 0):\n                self.myffts[curf][0]\
-      \ = np.add(v,self.myffts[curf][0])\n                self.mycounts[curf][0] +=\
-      \ 1\n            else:\n                skip -= 1\n            \n        for\
-      \ v in input_items[1]:\n            if (skip <= 0):\n                self.myffts[curf][1]\
-      \ = np.add(v,self.myffts[curf][0])\n                self.mycounts[curf][1] +=\
-      \ 1\n            else:\n                skip -= 1\n        \n        #\n   \
-      \     # This needs a complete re-do for multi-freq\n        #\n        if ((time.time()\
-      \ - self.last) > self.logtime):\n            for ndx in self.myffts:\n     \
-      \           lva = np.divide(self.myffts[ndx][0],self.mycounts[ndx][0])\n   \
-      \             lvb = np.divide(self.myffts[ndx][1],self.mycounts[ndx][1])\n \
-      \               \n                #\n                # Counters\n          \
-      \      #\n                self.mycounts[ndx][0] = 0\n                self.mycounts[ndx][1]\
+      \ != self.frequency):\n            self.current = self.frequency\n         \
+      \   skip = 1\n\n        curf = int(self.frequency/1.0e6)\n        \n       \
+      \ #\n        # Is a new frequency?  Initialize averaging buffers\n        #\n\
+      \        if (curf not in self.myffts):\n            self.myffts[curf] = [np.zeros(self.fftsize,dtype=np.float32),\n\
+      \                np.zeros(self.fftsize,dtype=np.float32)]\n            self.mycounts[curf]\
+      \ = [0,0]\n        \n        \n        for v in input_items[0]:\n          \
+      \  if (skip <= 0):\n                self.myffts[curf][0] = np.add(v,self.myffts[curf][0])\n\
+      \                self.mycounts[curf][0] += 1\n            else:\n          \
+      \      skip -= 1\n            \n        for v in input_items[1]:\n         \
+      \   if (skip <= 0):\n                self.myffts[curf][1] = np.add(v,self.myffts[curf][1])\n\
+      \                self.mycounts[curf][1] += 1\n            else:\n          \
+      \      skip -= 1\n        \n        #\n        # This needs a complete re-do\
+      \ for multi-freq\n        #\n        if ((time.time() - self.last) > self.logtime):\n\
+      \            for ndx in self.myffts:\n                lva = np.divide(self.myffts[ndx][0],self.mycounts[ndx][0])\n\
+      \                lvb = np.divide(self.myffts[ndx][1],self.mycounts[ndx][1])\n\
+      \                \n                #\n                # Counters\n         \
+      \       #\n                self.mycounts[ndx][0] = 0\n                self.mycounts[ndx][1]\
       \ = 0\n                \n                #\n                # Averaging buffers\n\
       \                #\n                self.myffts[ndx][0] = np.zeros(self.fftsize,dtype=np.float32)\n\
       \                self.myffts[ndx][1] = np.zeros(self.fftsize,dtype=np.float32)\n\
@@ -467,7 +503,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1888, 332.0]
+    coordinate: [1920, 332.0]
     rotation: 0
     state: true
 - name: logtime
@@ -984,8 +1020,10 @@ connections:
 - [blocks_complex_to_real_0, '0', pacer_probe, '0']
 - [blocks_head_0, '0', blocks_stream_to_vector_0, '0']
 - [blocks_head_0_0, '0', blocks_stream_to_vector_0_0, '0']
-- [blocks_keep_one_in_n_0, '0', logger_0, '0']
-- [blocks_keep_one_in_n_0_0, '0', logger_0, '1']
+- [blocks_keep_one_in_n_0, '0', blocks_multiply_const_xx_0, '0']
+- [blocks_keep_one_in_n_0_0, '0', blocks_multiply_const_xx_0_0, '0']
+- [blocks_multiply_const_xx_0, '0', logger_0, '0']
+- [blocks_multiply_const_xx_0_0, '0', logger_0, '1']
 - [blocks_stream_to_vector_0, '0', fft_vxx_0, '0']
 - [blocks_stream_to_vector_0_0, '0', fft_vxx_0_0, '0']
 - [fft_vxx_0, '0', blocks_complex_to_mag_squared_0, '0']
