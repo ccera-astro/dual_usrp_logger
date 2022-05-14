@@ -121,7 +121,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1040, 260.0]
+    coordinate: [1040, 220.0]
     rotation: 0
     state: true
 - name: blocks_complex_to_mag_squared_0_0
@@ -137,7 +137,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1056, 396.0]
+    coordinate: [1032, 460.0]
     rotation: 0
     state: true
 - name: blocks_complex_to_real_0
@@ -452,21 +452,22 @@ blocks:
       \   fp.write(\"\\n\")\n        fp.close()\n\n    def work(self, input_items,\
       \ output_items):\n        \"\"\"Accumulate and log FFT buffers\"\"\"\n     \
       \   \n        #\n        # Used to skip first buffer after frequency-switch\n\
-      \        #\n        skip = 0\n        \n        #\n        # If we've just switched\
-      \ frequency, discard input for one\n        #  cycle\n        #\n        if\
-      \ (self.current != self.frequency):\n            self.current = self.frequency\n\
-      \            skip = 1\n\n        curf = int(self.frequency/1.0e6)\n        \n\
-      \        #\n        # Is a new frequency?  Initialize averaging buffers\n  \
-      \      #\n        if (curf not in self.myffts):\n            self.myffts[curf]\
+      \        #\n        skip = False\n        \n        #\n        # If we've just\
+      \ switched frequency, discard input for one\n        #  cycle\n        #\n \
+      \       if (self.current != self.frequency):\n            self.current = self.frequency\n\
+      \            skip = True\n\n        curf = int(self.frequency/1.0e6)\n     \
+      \   \n        #\n        # Is a new frequency?  Initialize averaging buffers\n\
+      \        #\n        if (curf not in self.myffts):\n            self.myffts[curf]\
       \ = [np.zeros(self.fftsize,dtype=np.float32),\n                np.zeros(self.fftsize,dtype=np.float32)]\n\
-      \            self.mycounts[curf] = [0,0]\n        \n        \n        for v\
-      \ in input_items[0]:\n            if (skip <= 0):\n                self.myffts[curf][0]\
-      \ = np.add(v,self.myffts[curf][0])\n                self.mycounts[curf][0] +=\
-      \ 1\n            else:\n                skip -= 1\n            \n        for\
-      \ v in input_items[1]:\n            if (skip <= 0):\n                self.myffts[curf][1]\
-      \ = np.add(v,self.myffts[curf][1])\n                self.mycounts[curf][1] +=\
-      \ 1\n            else:\n                skip -= 1\n        \n        #\n   \
-      \     # This needs a complete re-do for multi-freq\n        #\n        if ((time.time()\
+      \            self.mycounts[curf] = [0,0]\n        \n        if (skip == True):\n\
+      \            s = 1\n        else:\n            s - 0\n        for v in input_items[0]:\n\
+      \            if (s <= 0):\n                self.myffts[curf][0] = np.add(v,self.myffts[curf][0])\n\
+      \                self.mycounts[curf][0] += 1\n            else:\n          \
+      \      s -= 1\n         \n        if (skip == True):\n            s = 1\n  \
+      \      else:\n            s = 0\n         \n        for v in input_items[1]:\n\
+      \            if (s <= 0):\n                self.myffts[curf][1] = np.add(v,self.myffts[curf][1])\n\
+      \                self.mycounts[curf][1] += 1\n            else:\n          \
+      \      s -= 1\n        \n        #\n        #\n        #\n        if ((time.time()\
       \ - self.last) > self.logtime):\n            for ndx in self.myffts:\n     \
       \           lva = np.divide(self.myffts[ndx][0],self.mycounts[ndx][0])\n   \
       \             lvb = np.divide(self.myffts[ndx][1],self.mycounts[ndx][1])\n \
@@ -504,7 +505,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1960, 332.0]
+    coordinate: [1984, 308.0]
     rotation: 0
     state: true
 - name: logtime
@@ -604,7 +605,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1264, 268.0]
+    coordinate: [1272, 268.0]
     rotation: 0
     state: true
 - name: single_pole_iir_filter_xx_0_0
@@ -622,7 +623,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1264, 372.0]
+    coordinate: [1264, 420.0]
     rotation: 0
     state: true
 - name: srate
